@@ -1,2 +1,2 @@
 # GitHub_CICD
-GitHub CI/CD
+GitHub CI/CDを学ぶためのリポジトリ
