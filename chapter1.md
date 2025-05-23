@@ -46,4 +46,27 @@ CDの鍵は**自動化**
 ## 環境構築
 
 ### GItHub CLI
-コマンドラインからGitHubを操作するツール
+**コマンドラインからGitHubを操作するツール**
+
+次の操作をサポートする
+- プルリクエストの作成・コメント追加・マージ
+- GitHub Actionsの参照・実行・有効化・無効化
+- リポジトリの作成・設定・Fork・アーカイブ
+
+**セットアップ**
+```shell
+% brew install gh #インストール
+ 
+% gh --version #バージョン確認
+gh version 2.73.0 (2025-05-19)
+https://github.com/cli/cli/releases/tag/v2.73.0
+
+% gh auth login # 指示に従って操作する
+```
+**GitHub CLIの使い方**
+
+```shell
+% gh --help #ヘルプコマンド
+% gh repo list #リポジトリの一覧取得
+% 
+```
