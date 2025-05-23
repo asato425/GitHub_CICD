@@ -68,5 +68,5 @@ https://github.com/cli/cli/releases/tag/v2.73.0
 ```shell
 % gh --help #ヘルプコマンド
 % gh repo list #リポジトリの一覧取得
-% 
+% gh pr create --fill-first --web # カレントブランチでプルリクを作成
 ```
