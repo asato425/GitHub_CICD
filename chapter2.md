@@ -1,4 +1,4 @@
-# GitHub AActionsの基礎概念
+# GitHub Actionsの基礎概念
 
 GitHub Actionsは**汎用的なワークフローエンジン**
 
@@ -113,4 +113,110 @@ JOBS
 
 For more information about the job, try: gh run view --job=42820126705
 View this run on GitHub: https://github.com/asato425/GitHub_CICD/actions/runs/15222468711
+```
+
+## GitHub Actionsのエラー
+
+### 構文エラー
+構文エラーには２種類ある
+
+1. 構文エラー
+```yml
+name: workflow error
+on: push
+jobs:
+  run:
+    run-on: ubuntu-latest # runs-onが正しい
+    steps:
+      - run: date
+```
+
+2. YAML構文エラー
+```yml
+name: workflow error
+on: push
+jobs:
+  run:
+    runs-on: ubuntu-latest
+      steps: # インデントが2文字ずれている
+      - run: date
+```
+
+### 実行時エラー
+ワークフローの実行中に発生する
+- GitHub Actionsでは実行時エラーをコマンドの**終了ステータス**で判断する
+
+**終了ステータス**
+- コマンド実行時にOSが成功時は0,失敗時は0以外を返す
+
+```shell
+% invalid-command # 存在しないコマンドを実行
+zsh: command not found: invalid-command
+% echo $?         # 終了ステータスを確認
+127               # 0以外の値→失敗とGitHub Actionsは判断
+```
+
+**※GitHub Actionsは終了ステータスで実行時エラーかどうかを判断するため、意図していない挙動でも正常終了(終了ステータス0)となる可能性あり**
+
+## ワークフローの起動方法
+
+- GitHub Actionsはイベント駆動型のサービス、様々なイベントをトリガーできる
+
+### 手動実行
+- `on`キーに`workflow_dispatch`を指定する
+- 入力パラメータも指定できる
+
+```yml
+name: Manual
+on:
+  workflow_dispatch:                       # 手動実行イベント
+    inputs:
+      greeting:                            # 入力パラメータ名
+        type: string                       # データ型（文字列）
+        default: Hello                     # 入力パラメータのデフォルト値
+        required: true                     # 入力パラメータの必須フラグ
+        description: A cheerful word       # 入力パラメータの概要
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${{ inputs.greeting }}" # 入力パラメータ「greeting」の参照
+```
+- ブラウザでRun workflowボタンから実行できる
+- GitHub CLIからでも実行できる
+```shell
+% gh workflow run manual.yml -f greeting=good # 入力パラメータは-fで指定
+bye
+✓ Created workflow_dispatch event for manual.yml at main
+
+To see runs for this workflow, try: gh run list --workflow=manual.yml
+```
+
+#### choiceによる列挙値の指定
+- optionキーで指定可能な値を定義できる
+```yml
+inputs:
+  log-level:
+    type: choice  # 入力パラメータを特定の値に制限
+    options:      # 受け入れる値を列挙
+      - info
+      - warn
+      - error
+```
+
+### 定期実行
+- `on`キーに`schedule`を指定する
+- ワークフローの起動タイミングはcron形式で記述する
+- タイムゾーンはUTCでJST(日本標準時)とは9時間ずれているため注意
+
+```yml
+name: Schedule
+on:
+  schedule:                # 定期実行イベント
+    - cron: '*/15 * * * *' # 15分ごとに起動するcron式
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - run: date
 ```
